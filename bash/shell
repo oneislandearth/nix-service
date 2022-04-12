@@ -49,22 +49,22 @@ select opt in build serve install; do
 
   case $opt in
     build)
-      echo -e "\x1b[34m\x1b[1m[nix-service]\x1b[0m Building the environment\n"
+      echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Building the environment\n"
       build
       break
       ;;
     serve)
-      echo -e "\x1b[34m\x1b[1m[nix-service]\x1b[0m Serving the environment with spstic\n"
+      echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Serving the environment with spstic\n"
       serve 
       break
       ;;
     install)
-      echo -e "\x1b[34m\x1b[1m[nix-service]\x1b[0m Installing all packages with yarn\n"
+      echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Installing all packages with yarn\n"
       install
       break
       ;;
     *) 
-      echo "\x1b[34m\x1b[1m[nix-service]\x1b[0m Invalid command\n"
+      echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Not a valid command\n"
       exit
       ;;
   esac

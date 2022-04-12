@@ -10,7 +10,8 @@ rec {
       yarn2nix                                       
     ];                                                                    
     shellHook = ''
-      sh <(curl -L -s https://raw.githubusercontent.com/oneislandearth/nix-service/main/bash/shell)
+      sh <(curl -L -s "https://raw.githubusercontent.com/oneislandearth/nix-service/main/bash/shell?$(date +%s)")
+      exit
     '';  
   };
 }
