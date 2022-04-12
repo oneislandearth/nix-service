@@ -40,7 +40,7 @@ function serve() {
 }
 
 # Welcome message
-echo -e "\x1b[34m\x1b[1m[nix-service]\x1b[0m\n"
+echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m\n"
 
 # Handle the operations
 PS3=$'\n'"Select operation: "

@@ -10,7 +10,7 @@ rec {
       yarn2nix                                       
     ];                                                                    
     shellHook = ''
-      sh <(curl -L -s "https://raw.githubusercontent.com/oneislandearth/nix-service/main/bash/shell?$(date +%s)")
+      sh <(curl -L -s  -H 'Cache-Control: no-cache, no-store' "https://raw.githubusercontent.com/oneislandearth/nix-service/main/bash/shell?ts=$(date +%s)")
       exit
     '';  
   };

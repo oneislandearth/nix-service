@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Log out a message
+echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Installing nix-service..."
+
 # Make the nix folder
 mkdir -p .nix
 
@@ -14,3 +17,9 @@ curl -s -o shell.nix https://raw.githubusercontent.com/oneislandearth/nix-servic
 
 # Save the modules shell script
 curl -s -o modules.nix https://raw.githubusercontent.com/oneislandearth/nix-service/main/nix/modules.nix
+
+# Save the gitignore
+curl -s -o .gitignore https://raw.githubusercontent.com/oneislandearth/nix-service/main/.gitignore
+
+# Log out a message
+echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Successfully installed and configured\n"

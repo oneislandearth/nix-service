@@ -15,9 +15,9 @@ A Nix environment for development
 
 JavaScript environment management with [Nix](https://nixos.org) including webservices with [spstic](https://github.com/danzlarkin/spstic)
 
-## Installation
+## Usage
 
-Fistly ensure [Nix](https://nixos.org) is installed using 
+If not already installed, please install [Nix](https://nixos.org) by running the following
 
 ```sh
 $ sh <(curl -L https://nixos.org/nix/install)
@@ -34,6 +34,8 @@ Once installed to your working directory, run the following to open the shell
 ```sh
 $ nix-shell
 ```
+
+You will be presented with a selection of options to be ran from the shell
 
 ## License
 
