@@ -36,7 +36,7 @@ function install() {
 function serve() {
 
   # Run spstic
-  .nix/tools/spstic-0.0.02/spstic --local
+  .nix/tools/spstic-0.0.2/spstic --local
 }
 
 # Welcome message
