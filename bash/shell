@@ -1,0 +1,71 @@
+#!/bin/bash
+
+# Describe the build function
+function build() {
+
+  # Build the modules in nix
+  nix-build modules.nix -o .nix/dist
+
+  # Remove the modules installed by yarn
+  rm node_modules -rf
+
+  # Get the current package name
+  name=$( cat package.json | jq -r '.name' ) 
+
+  # Link to the modules built by nix
+  ln -s $PWD/.nix/dist/libexec/$name/node_modules $PWD/node_modules
+}
+
+# Describe the build function
+function install() {
+
+  # Remove the node modules
+  rm node_modules -rf
+
+  # Install the modules from yarn
+  yarn install -s
+
+  # Convert the modules to nix
+  yarn2nix > yarn.nix
+
+  # Build
+  build
+}
+
+# Deploy the service
+function serve() {
+
+  # Run spstic
+  .nix/tools/spstic-0.0.02/spstic --local
+}
+
+# Welcome message
+echo -e "\x1b[34m\x1b[1m[nix-service]\x1b[0m\n"
+
+# Handle the operations
+PS3=$'\n'"Select operation: "
+
+select opt in build serve install; do
+
+  case $opt in
+    build)
+      echo -e "\x1b[34m\x1b[1m[nix-service]\x1b[0m Building the environment\n"
+      build
+      break
+      ;;
+    serve)
+      echo -e "\x1b[34m\x1b[1m[nix-service]\x1b[0m Serving the environment with spstic\n"
+      serve 
+      break
+      ;;
+    install)
+      echo -e "\x1b[34m\x1b[1m[nix-service]\x1b[0m Installing all packages with yarn\n"
+      install
+      break
+      ;;
+    *) 
+      echo "\x1b[34m\x1b[1m[nix-service]\x1b[0m Invalid command\n"
+      exit
+      ;;
+  esac
+done

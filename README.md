@@ -1,6 +1,6 @@
-# nix-template
+# nix-service
 
-Nix template for OneIsland projects
+A Nix environment for development
 
 ***
 
@@ -13,9 +13,7 @@ Nix template for OneIsland projects
 
 ## Features
 
-Supports a Deno microservice which will deployed using the assets from './public/'.
-
-Also includes esbuild which will compile './src/main.js' to './public/main.bundle.js' for deployment.
+JavaScript environment management with [Nix](https://nixos.org) including webservices with [spstic](https://github.com/danzlarkin/spstic)
 
 ## Installation
 
@@ -25,7 +23,17 @@ Fistly ensure [Nix](https://nixos.org) is installed using
 $ sh <(curl -L https://nixos.org/nix/install)
 ```
 
-After Nix is installed you can simply clone this repository
+After Nix is installed you can simply install to your repository
+
+```sh
+$ sh <(curl -L https://raw.githubusercontent.com/oneislandearth/nix-service/main/bash/install)
+```
+
+Once installed to your working directory, run the following to open the shell
+
+```sh
+$ nix-shell
+```
 
 ## License
 
