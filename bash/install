@@ -10,7 +10,7 @@ mkdir -p .nix
 mkdir -p .nix/tools
 
 # Install spastic to the tools
-curl -s --compressed  https://codeload.github.com/danzlarkin/spstic/tar.gz/refs/tags/v0.0.2 | tar xvz -C .nix/tools
+curl -s --compressed  https://codeload.github.com/danzlarkin/spstic/tar.gz/refs/tags/v0.0.2 | tar xz -C .nix/tools
 
 # Save the nix shell script
 curl -s -o shell.nix https://raw.githubusercontent.com/oneislandearth/nix-service/main/nix/shell.nix
