@@ -20,7 +20,7 @@ function build() {
 function serve() {
 
   # Check if spstic is not installed
-  if [ ! -d ./nix/tools/spstic-0.0.2 ]; then
+  if [ ! -f .nix/tools/spstic-0.0.2/spstic ]; then
 
     # Log a message for install
     echo -e "\x1b[34m\x1b[1m[nix-service]\x1b[0m Installing spstic...\n"
@@ -32,8 +32,14 @@ function serve() {
     curl -s --compressed  https://codeload.github.com/danzlarkin/spstic/tar.gz/refs/tags/v0.0.2 | tar xz -C .nix/tools
   fi
 
+  # Log a message for install
+  echo -e "\x1b[34m\x1b[1m[nix-service]\x1b[0m Specify any spstic flags?\n"
+
+  # Ask for flags
+  read -p 'flags: ' flags
+
   # Run spstic
-  .nix/tools/spstic-0.0.2/spstic --local
+  .nix/tools/spstic-0.0.2/spstic --local $flags
 }
 
 # Describe the reconfigure function
