@@ -16,8 +16,28 @@ function build() {
   ln -s $PWD/.nix/dist/libexec/$name/node_modules $PWD/node_modules
 }
 
-# Describe the build function
-function install() {
+# Deploy the service
+function serve() {
+
+  # Check if spstic is not installed
+  if [ ! -d ./nix/tools/spstic-0.0.2 ]; then
+
+    # Log a message for install
+    echo -e "\x1b[34m\x1b[1m[nix-service]\x1b[0m Installing spstic...\n"
+
+    # Make the tools folder
+    mkdir -p .nix/tools
+
+    # Install spastic to the tools
+    curl -s --compressed  https://codeload.github.com/danzlarkin/spstic/tar.gz/refs/tags/v0.0.2 | tar xz -C .nix/tools
+  fi
+
+  # Run spstic
+  .nix/tools/spstic-0.0.2/spstic --local
+}
+
+# Describe the reconfigure function
+function reconfigure() {
 
   # Remove the node modules
   rm node_modules -rf
@@ -32,33 +52,13 @@ function install() {
   build
 }
 
-# Deploy the service
-function serve() {
-
-  # Check if spstic is not installed
-  if [ ! -d ./nix/tools/spstic-0.0.2 ]; then
-
-    # Log a message for install
-    echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Install spstic...\n"
-
-    # Make the tools folder
-    mkdir -p .nix/tools
-
-    # Install spastic to the tools
-    curl -s --compressed  https://codeload.github.com/danzlarkin/spstic/tar.gz/refs/tags/v0.0.2 | tar xz -C .nix/tools
-  fi
-
-  # Run spstic
-  .nix/tools/spstic-0.0.2/spstic --local
-}
-
 # Welcome message
 echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m\n"
 
 # Handle the operations
 PS3=$'\n'"Select operation: "
 
-select opt in build serve install; do
+select opt in build serve reconfigure; do
 
   case $opt in
     build)
@@ -71,9 +71,9 @@ select opt in build serve install; do
       serve 
       break
       ;;
-    install)
-      echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Installing all packages with yarn\n"
-      install
+    reconfigure)
+      echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Reconfiguring all packages with yarn\n"
+      reconfigure
       break
       ;;
     *) 
