@@ -38,6 +38,9 @@ function serve() {
   # Ask for flags
   read -p 'flags: ' flags
 
+  # Log out the serve message
+  echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Serving the environment with spstic\n"
+
   # Run spstic
   .nix/tools/spstic-0.0.2/spstic --local $flags
 }
@@ -73,7 +76,7 @@ select opt in build serve reconfigure; do
       break
       ;;
     serve)
-      echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Serving the environment with spstic\n"
+      echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Preparing the environment\n"
       serve 
       break
       ;;
