@@ -148,7 +148,7 @@ select opt in build serve distribute reconfigure; do
       break
       ;;
     distribute)
-      echo -e "\x1b[34m\x1b[1m[nix-service]\x1b[0m Bundling up the current code revision...\n"
+      echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Bundling up the current code revision...\n"
       distribute
       break
       ;;
