@@ -56,26 +56,11 @@ function distribute() {
   # Copy the files from the public directory
   cp -r ./public/* .nix/builds/current
 
-  # Define the spstic version to use
-  version=0.0.2
+  # Build the main script as a bundle
+  esbuild --bundle --loader:.js=jsx --minify --format=esm --outfile=.nix/builds/current/main-bundle.js public/main.js
 
-  # Make the tools folder
-  mkdir -p .nix/tools
-
-  # Install spastic to the tools
-  curl -s --compressed  https://codeload.github.com/danzlarkin/spstic/tar.gz/refs/tags/v$version | tar xz -C .nix/tools
-
-  # Deploy a service instance
-  .nix/tools/spstic-$version/spstic --local --port=8201 </dev/null &>/dev/null &
-
-  # Wait for a few seconds
-  sleep 4
-
-  # Fetch the main bundle
-  curl -s -o .nix/builds/current/main-bundle.js http://localhost:8201/public/main-bundle.js
-
-  # Kill the server on the port
-  kill -9 $(lsof -t -i:8201)
+  # Remove the main script as it is not used
+  rm .nix/builds/current/main.js
 
   # Compute the hash
   hash=$( nix-hash --type sha1 .nix/builds/current )

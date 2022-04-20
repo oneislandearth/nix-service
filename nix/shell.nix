@@ -4,7 +4,8 @@ rec {
     name = "environment";                   
     buildInputs = [   
       curl 
-      jq           
+      jq
+      esbuild           
       deno
       yarn 
       yarn2nix                                       
