@@ -75,23 +75,35 @@ function distribute() {
   authorization=$(cat .nix/authorization)
 
   # Log a message for uploading
-  echo -e "\x1b[34m\x1b[1m[nix-service]\x1b[0m Deploying the revision to devspace server...\n"
+  echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Deploying the revision to devspace server...\n"
+
+  # Load the existing ifs
+  OIFS="$IFS"
+
+  # Replace the ifs
+  IFS=$'\n'
 
   # Iterate through the files
-  for file in .nix/builds/$hash/* .nix/builds/$hash/**/* .nix/builds/$hash/**/**/*; do
+  for file in $(find .nix/builds/$hash -type f -exec ls {} +); do
 
     # Define the localised path
     path=${file/".nix/builds/"/""}
 
+    # Compute the escaped url path
+    escaped=${path// /"%20"}
+
     # Read the file type
-    type=$(mimetype "$file" | awk '{print $2}')
+    type=$(mimetype -b "$file")
     
     # Upload the file
-    curl -s -o /dev/null --location --request POST "https://devspace.oneisland.io/$path" \
+    curl -s -o /dev/null --location --request POST "https://devspace.oneisland.io/$escaped" \
     --header "Content-Type: $type" \
     --header "Authorization: $authorization" \
     --data-binary "@$file"
   done;
+
+  # Switch back the ifs
+  IFS="$OIFS"
 
   # Log a message for completion
   echo -e "\x1b[34m\x1b[1m[nix-service]\x1b[0m Successfully deployed to https://devspace.oneisland.io/$hash/\n"
