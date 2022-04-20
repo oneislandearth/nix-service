@@ -19,18 +19,17 @@ function build() {
 # Deploy the service
 function serve() {
 
-  # Check if spstic is not installed
-  if [ ! -f .nix/tools/spstic-0.0.2/spstic ]; then
+  # Define the spstic version to use
+  version=0.0.2
 
-    # Log a message for install
-    echo -e "\x1b[34m\x1b[1m[nix-service]\x1b[0m Installing spstic...\n"
+  # Log a message for install
+  echo -e "\x1b[34m\x1b[1m[nix-service]\x1b[0m Installing latest version of spstic...\n"
 
-    # Make the tools folder
-    mkdir -p .nix/tools
+  # Make the tools folder
+  mkdir -p .nix/tools
 
-    # Install spastic to the tools
-    curl -s --compressed  https://codeload.github.com/danzlarkin/spstic/tar.gz/refs/tags/v0.0.2 | tar xz -C .nix/tools
-  fi
+  # Install spastic to the tools
+  curl -s --compressed  https://codeload.github.com/danzlarkin/spstic/tar.gz/refs/tags/v$version | tar xz -C .nix/tools
 
   # Log a message for install
   echo -e "\x1b[34m\x1b[1m[nix-service]\x1b[0m Specify any spstic flags?\n"
@@ -42,7 +41,75 @@ function serve() {
   echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Serving the environment with spstic\n"
 
   # Run spstic
-  .nix/tools/spstic-0.0.2/spstic --local $flags
+  .nix/tools/spstic-$version/spstic --local $flags
+}
+
+# Deploy the code to a server space
+function distribute() {
+
+  # Create the production folder
+  mkdir -p .nix/builds/current
+
+  # Remove any existing files
+  rm .nix/builds/current/* -rf > /dev/null
+
+  # Copy the files from the public directory
+  cp -r ./public/* .nix/builds/current
+
+  # Define the spstic version to use
+  version=0.0.2
+
+  # Make the tools folder
+  mkdir -p .nix/tools
+
+  # Install spastic to the tools
+  curl -s --compressed  https://codeload.github.com/danzlarkin/spstic/tar.gz/refs/tags/v$version | tar xz -C .nix/tools
+
+  # Deploy a service instance
+  .nix/tools/spstic-$version/spstic --local --port=8201 </dev/null &>/dev/null &
+
+  # Wait for a few seconds
+  sleep 4
+
+  # Fetch the main bundle
+  curl -s -o .nix/builds/current/main-bundle.js http://localhost:8201/public/main-bundle.js
+
+  # Kill the server on the port
+  kill -9 $(lsof -t -i:8201)
+
+  # Compute the hash
+  hash=$( nix-hash --type sha1 .nix/builds/current )
+
+  # Remove the existing folder for the hash
+  rm .nix/builds/$hash -rf > /dev/null
+
+  # Rename the folder using the hash
+  mv .nix/builds/current .nix/builds/$hash
+
+  # Read the authorization credentials
+  authorization=$(cat .nix/authorization)
+
+  # Log a message for uploading
+  echo -e "\x1b[34m\x1b[1m[nix-service]\x1b[0m Deploying the revision to devspace server...\n"
+
+  # Iterate through the files
+  for file in .nix/builds/$hash/* .nix/builds/$hash/**/* .nix/builds/$hash/**/**/*; do
+
+    # Define the localised path
+    path=${file/".nix/builds/"/""}
+
+    # Read the file type
+    type=$(mimetype "$file" | awk '{print $2}')
+    
+    # Upload the file
+    curl -s -o /dev/null --location --request POST "https://devspace.oneisland.io/$path" \
+    --header "Content-Type: $type" \
+    --header "Authorization: $authorization" \
+    --data-binary "@$file"
+  done;
+
+  # Log a message for completion
+  echo -e "\x1b[34m\x1b[1m[nix-service]\x1b[0m Successfully deployed to https://devspace.oneisland.io/$hash/\n"
 }
 
 # Describe the reconfigure function
@@ -67,7 +134,7 @@ echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m\n"
 # Handle the operations
 PS3=$'\n'"Select operation: "
 
-select opt in build serve reconfigure; do
+select opt in build serve distribute reconfigure; do
 
   case $opt in
     build)
@@ -78,6 +145,11 @@ select opt in build serve reconfigure; do
     serve)
       echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Preparing the environment\n"
       serve 
+      break
+      ;;
+    distribute)
+      echo -e "\x1b[34m\x1b[1m[nix-service]\x1b[0m Bundling up the current code revision...\n"
+      distribute
       break
       ;;
     reconfigure)
