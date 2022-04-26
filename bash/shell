@@ -4,7 +4,10 @@
 function build() {
 
   # Build the modules in nix
-  nix-build modules.nix -o .nix/dist
+  $(nix-build modules.nix -o .nix/dist) > /dev/null
+
+  # Log out the build message
+  echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Built the yarn dependencies for the nix environment\n"
 
   # Remove the modules installed by yarn
   rm node_modules -rf
@@ -130,9 +133,6 @@ function addpkg() {
   # Convert the modules to nix
   $(yarn2nix > yarn.nix) > /dev/null
 
-  # Log out the build message
-  echo -e "\n\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Built the yarn dependencies for the nix environment\n"
-
   # Build
   build
 }
@@ -147,13 +147,10 @@ function reconfigure() {
   yarn install -s
 
   # Log out the installed message
-  echo -e "\n\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Installed all yarn dependencies\n"
+  echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Installed all yarn dependencies\n"
 
   # Convert the modules to nix
   $(yarn2nix > yarn.nix) > /dev/null
-
-  # Log out the build message
-  echo -e "\n\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Built the yarn dependencies for the nix environment\n"
 
   # Build
   build
