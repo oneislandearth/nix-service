@@ -35,7 +35,7 @@ function serve() {
   echo -e "\x1b[34m\x1b[1m[nix-service]\x1b[0m Specify any spstic flags?\n"
 
   # Ask for flags
-  read -p 'flags: ' flags
+  read -p '> ' flags
 
   # Log out the serve message
   echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Serving the environment with spstic\n"
@@ -109,6 +109,31 @@ function distribute() {
   echo -e "\x1b[34m\x1b[1m[nix-service]\x1b[0m Successfully deployed to https://devspace.oneisland.io/$hash/\n"
 }
 
+# Add another dependency
+function addpkg() {
+
+  # Remove the node modules
+  rm node_modules -rf
+
+  # Log a message for install
+  echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Enter the name of the dependency package\n"
+
+  # Ask for flags
+  read -p '> ' package
+
+  # Install the package
+  yarn add $package
+
+  # Log out the added message
+  echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Added the dependency package with yarn\n"
+
+  # Convert the modules to nix
+  yarn2nix > yarn.nix
+
+  # Build
+  build
+}
+
 # Describe the reconfigure function
 function reconfigure() {
 
@@ -131,7 +156,7 @@ echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m\n"
 # Handle the operations
 PS3=$'\n'"Select operation: "
 
-select opt in build serve distribute reconfigure; do
+select opt in build serve distribute "add dependency" reconfigure; do
 
   case $opt in
     build)
@@ -147,6 +172,11 @@ select opt in build serve distribute reconfigure; do
     distribute)
       echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Bundling up the current code revision...\n"
       distribute
+      break
+      ;;
+    "add dependency")
+      echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Clearing the environment to add new dependency package\n"
+      addpkg
       break
       ;;
     reconfigure)
