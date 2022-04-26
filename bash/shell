@@ -116,7 +116,7 @@ function addpkg() {
   rm node_modules -rf
 
   # Log a message for install
-  echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Enter the name of the dependency package\n"
+  echo -e "\x1b[34m\x1b[1m[nix-service]\x1b[0m Enter the name of the dependency package\n"
 
   # Ask for flags
   read -p '> ' package
@@ -125,10 +125,13 @@ function addpkg() {
   yarn add $package
 
   # Log out the added message
-  echo -e "\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Added the dependency package with yarn\n"
+  echo -e "\n\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Added the dependency package with yarn\n"
 
   # Convert the modules to nix
-  yarn2nix > yarn.nix
+  $(yarn2nix > yarn.nix) > /dev/null
+
+  # Log out the build message
+  echo -e "\n\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Built the yarn dependencies for the nix environment\n"
 
   # Build
   build
@@ -143,8 +146,14 @@ function reconfigure() {
   # Install the modules from yarn
   yarn install -s
 
+  # Log out the installed message
+  echo -e "\n\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Installed all yarn dependencies\n"
+
   # Convert the modules to nix
-  yarn2nix > yarn.nix
+  $(yarn2nix > yarn.nix) > /dev/null
+
+  # Log out the build message
+  echo -e "\n\n\x1b[34m\x1b[1m[nix-service]\x1b[0m Built the yarn dependencies for the nix environment\n"
 
   # Build
   build
